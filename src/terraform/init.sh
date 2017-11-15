@@ -58,3 +58,12 @@ terraform init \
   -backend-config="bucket=$STATE_BUCKET" \
   -backend-config="key=$STAGE/terraform.tfstate" \
   -backend-config="region=$AWS_REGION"
+
+mkdir -p ../config
+
+
+TF_VAR_region=${AWS_REGION} \
+TF_VAR_app_namespace="${APP_NAMESPACE}" \
+TF_VAR_stage=${STAGE} \
+AWS_PROFILE=${AWS_PROFILE} \
+envsubst < tf.env.tpl > ../config/tf-${STAGE}.env
