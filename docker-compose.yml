@@ -1,0 +1,43 @@
+version: '3'
+services:
+  sql:
+    image: mdillon/postgis
+    volumes:
+      - ./data/postgres:/data/postgres
+    environment:
+      - PGDATA=/data/postgres/db
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 5432:5432
+  api:
+    build: ./src/hello_world_api
+    environment:
+      - MIX_ENV=dev
+      - AWS_REGION
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+    volumes:
+      - ./src/hello_world_api/:/opt/api
+    links:
+      - sql
+    ports:
+      - 4000:4000
+      - 4001:4001
+      - 4040:4040
+    depends_on:
+      - sql
+    user: developer
+    working_dir: /opt/api
+    command: mix run_docker
+  pwa:
+    build: ./src/hello_world_pwa
+    volumes:
+      - ./src/hello_world_pwa:/opt/pwa
+    links:
+      - api
+    ports:
+      - 8080:8080
+    working_dir: /opt/pwa
+    command: npm run docker
