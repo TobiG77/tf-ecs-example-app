@@ -6,3 +6,9 @@ erl_crash.dump
 *.beam
 data/*
 src/terraform/.terraform/
+src/terraform/terraform.tfstate.backup
+
+.DS_Store
+
+src/config
+

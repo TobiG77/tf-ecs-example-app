@@ -1,0 +1,28 @@
+FROM tobig77/centos7-elixir as buildenv
+
+MAINTAINER Tobias Gerschner <tobias.gerschner@gmail.com>
+
+ENV PATH=$PATH:/usr/local/elixir/bin
+ENV ERL_AFLAGS="-kernel shell_history enabled"
+WORKDIR /opt/app
+
+RUN yum -y install \
+    inotify-tools \
+    make \
+    gcc \
+    jq \
+    python-pip \
+    gettext
+
+RUN pip install awscli
+RUN mix archive.install https://github.com/phoenixframework/archives/raw/master/phx_new.ez --force
+
+ADD . .
+
+RUN mix local.hex --force && \
+    mix local.rebar --force && \
+    mix deps.get && \
+    mix compile && \
+    chmod +x start-ecs.sh
+
+CMD /opt/app/start-ecs.sh /opt/app
